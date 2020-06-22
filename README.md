@@ -1,4 +1,4 @@
-# Метрики Холстеда (в процессе)
+# Метрики Холстеда
 Программа и анализ метрик Холстеда для экзамена по дисциплине "Метрология и качество программного обеспечения информационных систем"
 
 **Выполнил:** Максим Филькин, гр.3938  
@@ -42,16 +42,16 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Main {
+class Main {
 
-    public static void main(String[] args) throws IOException {
+    void main(String[] args) throws IOException {
         List<Integer> data = Files.lines(Paths.get("src/test_data.txt"))
                 .map(Integer::valueOf)
                 .collect(Collectors.toList());
         checkIndicators(data);
     }
 
-    public static void checkIndicators(List<Integer> data) {
+    void checkIndicators(List<Integer> data) {
         data.remove(0);
         int controlValue = data.remove(data.size() - 1);
         Integer min = data.stream()
