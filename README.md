@@ -1,4 +1,4 @@
-# Метрики Холстеда (в процессе)
+# Метрики Холстеда
 Программа и анализ метрик Холстеда для экзамена по дисциплине "Метрология и качество программного обеспечения информационных систем"
 
 **Выполнил:** Максим Филькин, гр.3938  
@@ -42,16 +42,16 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Main {
+class Main {
 
-    public static void main(String[] args) throws IOException {
+    void main(String[] args) throws IOException {
         List<Integer> data = Files.lines(Paths.get("src/test_data.txt"))
                 .map(Integer::valueOf)
                 .collect(Collectors.toList());
         checkIndicators(data);
     }
 
-    public static void checkIndicators(List<Integer> data) {
+    void checkIndicators(List<Integer> data) {
         data.remove(0);
         int controlValue = data.remove(data.size() - 1);
         Integer min = data.stream()
@@ -94,3 +94,69 @@ public class Main {
 Полученное контрольное значение  = 15
 Контроль пройдет/ Не пройден: Контроль пройден
 ```
+**Расчет метрик Холстеда**
+| Номер строки | Словарь операторов (n1)      | Словарь операндов (n2)                                                  | Общее число операторов (N1)                   | Общее число операндов (N2)                                                                |
+| ------------ |:----------------------------:|:-----------------------------------------------------------------------:|:---------------------------------------------:|:-----------------------------------------------------------------------------------------:|
+|1             |call                          |java, io, IOException                                                    |call                                           |java, io, IOException                                                                      |
+|2             |                              |nio, file, Files                                                         |call                                           |java, nio, file, Files                                                                     |
+|3             |                              |Paths                                                                    |call                                           |java, nio, file, Paths                                                                     |
+|4             |                              |util, List                                                               |call                                           |java, util, List                                                                           |
+|5             |                              |stream, Collectors                                                       |call                                           |java, util, stream, Collectors                                                             |
+|6             |                              |                                                                         |                                               |                                                                                           |
+|7             |                              |Main                                                                     |                                               |Main                                                                                       |
+|8             |                              |                                                                         |                                               |                                                                                           |
+|9             |                              |main, args                                                               |                                               |                                                                                           |
+|10            |=                             |data, "src/test_data.txt"                                                |=, call, call                                  |data, "src/test_data.txt", Files, Paths                                                    |
+|11            |::                            |Integer                                                                  |call, call                                     |Integer                                                                                    |
+|12            |                              |                                                                         |call, call                                     |Collectors                                                                                 |
+|13            |                              |                                                                         |call                                           |data                                                                                       |
+|14            |                              |                                                                         |                                               |                                                                                           |
+|15            |                              |                                                                         |                                               |                                                                                           |
+|16            |                              |checkIndicators                                                          |                                               |checkIndicators, data                                                                      |
+|17            |                              |0                                                                        |call                                           |data, 0                                                                                    |
+|18            |-                             |controlValue, 1                                                          |=, -, call, call                               |controlValue, data, data, 1                                                                |
+|19            |                              |min                                                                      |=, call                                        |min, data                                                                                  |
+|20            |->, %, ==, &&, !=             |x, 2, 3                                                                  |call, ->, %, %, ==, &&, !=                     |x, 2, 3, 0                                                                                 |
+|21            |                              |                                                                         |call, call                                     |Integer                                                                                    |
+|22            |                              |null                                                                     |call                                           |null                                                                                       |
+|23            |                              |max                                                                      |=, call                                        |max, data                                                                                  |
+|24            |                              |                                                                         |call, ->, %, %, ==, &&, !=                     |x, 2, 3, 0                                                                                 |
+|25            |                              |                                                                         |call, call                                     |Integer                                                                                    |
+|26            |                              |                                                                         |call                                           |null                                                                                       |
+|27            |?, :, /                       |averageValue                                                             |=, !=, &&, !=, ?, +, /, :                      |averageValue, min, min, max, max, null, null, 2, 0                                         |
+|28            |                              |"Среднее значение между максимальным и минимальным элементом = ", System |call, call, +                                  |System, "Среднее значение между максимальным и минимальным элементом = ", averageValue     |
+|29            |                              |"Полученное контрольное значение  = "                                    |call, call, +                                  |"Полученное контрольное значение  = ", System, controlValue                                |
+|30            |                              |controlCheckMessage, "Контроль пройдет/ Не пройден: "                    |=                                              |controlCheckMessage, "Контроль пройдет/ Не пройден: "                                      |
+|31            |+=                            |"Контроль пройден", "Контроль не пройден"                                |+=, ==, ?, :                                   |controlCheckMessage, averageValue, controlValue, "Контроль пройден", "Контроль не пройден" |
+|32            |                              |                                                                         |call, call                                     |System, controlCheckMessage                                                                |
+|33            |                              |                                                                         |                                               |                                                                                           |
+|34            |                              |                                                                         |                                               |                                                                                           |
+|35            |                              |                                                                         |                                               |                                                                                           |
+|Всего         |13                            |35                                                                       |63                                             |74                                                                                          |
+
+**Метрики Холстеда**
+
+1. Словарь программы (*Halstead Program Vocabulary*, *HPVoc*):\
+n = n1 + n2 = 13 + 35 = 48
+2. Длина программы (*Halstead Program Length*, *HPLen*):\
+N = N1 + N2 = 63 + 74 = 137
+3. Объем программы (*Halstead Program Volume*, *HPVol*):\
+V = N \* log2(n) = 137 \* 5,585 ~ 766 бит
+4. Потенциальный объем программы:\
+V\* = n \* log2(n) = 48 \* 5,585 ~ 267 бит
+5. Информационная длина программы:
+N\* = n1 \* log2(n1) + n2 \* log2(n2) = 13 \* 3,7 + 35 \* 5,129 = 227.615
+6. Уровень качества программирования L (уровень программы):\
+L = V\* / V = 267 / 766 ~ 0.348
+7. Сложность программы (*Halstead Difficulty*, *HDiff*):\
+D = 1 / L = 1 / 0.348 ~ 2.874
+8. Информационное (интеллектуальное) содержание:\
+I = V / D = 766 / 2.874 ~ 266.527
+9. Интеллектуальное усилия (*Halstead Effort*, *HEff*):\
+E = V \* D = V / L = 766 / 0.348 ~ 2201.15
+Время на программирование (в условных единицах):\
+T = E / S = 2201.15 / 5 = 440.23 (S – число Страуда (5 < S < 20))
+10. Уровень языка выражения:\
+λ = V / D^2 = V \* L^2 = 766 \* (0.348)^2 ~ 92.766
+11. Количество ошибок в программе:\
+В = V / 3000 = 766 / 3000 ~ 0.25 (0-1 ошибок)
